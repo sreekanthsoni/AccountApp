@@ -4,7 +4,7 @@ $.AjaxJSON = function(){
             if(aPassOnOptions === undefined || aPassOnOptions === null){
                 aPassOnOptions = {};
             }
-            url = $.trim(url);
+            url = encodeURI($.trim(url));
             $.ajax({
                 url : url,
                 type: "post",
