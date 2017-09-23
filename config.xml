@@ -56,15 +56,9 @@
         <icon height="152" width="152" platform="ios" src="www/res/ios/Icon-App-76x76@2x.png"/>
         <icon height="50" width="50" platform="ios" src="www/res/ios/Icon-Small-50x50@1x.png"/>
         <icon height="100" width="100" platform="ios" src="www/res/ios/Icon-Small-50x50@2x.png"/>
-        <splash height="480" width="320" platform="ios" src="www/res/ios/iTunesArtWork@1x.png"/>
         <splash height="512" width="512" platform="ios" src="www/res/ios/iTunesArtWork@1x.png"/>
-        <splash height="768" width="1024" platform="ios" src="www/res/ios/iTunesArtWork@2x.png"/>
-        <splash height="960" width="640" platform="ios" src="www/res/ios/iTunesArtWork@2x.png"/>
         <splash height="1024" width="1024" platform="ios" src="www/res/ios/iTunesArtWork@2x.png"/>
-        <splash height="1136" width="640" platform="ios" src="www/res/ios/iTunesArtWork@2x.png"/>
-        <splash height="1334" width="750" platform="ios" src="www/res/ios/iTunesArtWork@3x.png"/>
         <splash height="1536" width="1536" platform="ios" src="www/res/ios/iTunesArtWork@3x.png"/>
-        <splash height="2208" width="1242" platform="ios" src="www/res/ios/iTunesArtWork@3x.png"/>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
