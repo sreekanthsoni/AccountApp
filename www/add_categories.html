@@ -1,0 +1,131 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+        
+        <link rel="stylesheet" type="text/css" href="styles/jquery.mobile-1.4.5.min.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/custom.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/expense-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/jtsage-datebox.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/home.css" />
+        
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery.AjaxJSON.js"></script>
+        <script type="text/javascript" src="js/jquery.DatabaseObject.js"></script>
+        <script type="text/javascript" src="js/jquery.LoginObject.js"></script>
+        <script type="text/javascript" src="js/jquery.GetData.js"></script>
+        <script type="text/javascript" src="js/jquery.MainEvents.js"></script>
+        <script type="text/javascript" src="js/jtsage-datebox.min.js"></script>
+        
+        <title>ACCOUNTS PAGE</title>
+    </head>
+    <body>
+        <div data-role="page" id="add_category_page">
+            <style>
+                table thead th, table tbody td{border: 0px solid black !important;}
+                table tbody td .ui-btn{margin: 0px !important;}
+            </style>
+            <div data-role="header" data-position="static" >
+                <h3 class="text-center">ACCOUNTS</h3>
+                <a href="#menu" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-bars">Menu</a>
+                <a href="logout.html" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-power">Logout</a>
+                <span data-name="welcome_user" class="text-center welcome_user"></span>
+                <div data-role="navbar" style="border-top: 1px solid #132226;">
+                    <ul>
+                        <li><a href="categories.html" class="ui-btn ui-btn-icon-top ui-icon-edit ui-nodisc-icon" >Edit Categories</a></li>
+                        <li><a href="add_categories.html" class="ui-btn ui-btn-icon-top ui-icon-plus ui-nodisc-icon ui-btn-active">Add Category</a></li>
+                    </ul>
+		</div>
+            </div>
+            <div data-role="main" class="ui-content">
+                <form name="add_category_form" id="add_category_form" method="post" onsubmit="return false;">
+                    <h4 id="error_add_category" class="error text-center">&nbsp;</h4>
+                    <fieldset data-role="controlgroup"  data-type="horizontal" class="text-center">
+                        <input type="radio" name="add_category_type" id="add_income" value="income" data-name="INCOME">
+                        <label for="add_income">INCOME</label>
+                        <input type="radio" name="add_category_type" id="add_expense" value="expense" data-name="EXPENSE" checked="checked">
+                        <label for="add_expense">EXPENSE</label>
+                    </fieldset>
+                    <input type="text" name="category_name" id="category_name" placeholder="CATEGORY" required class="text-center"/>
+                    <div class="ui-field-contain">
+                        <button type="submit" data-inline="true" class="ui-btn ui-btn-corner-all ui-btn-b" data-name="save" name="save">SAVE</button>
+                    </div>
+                </form>
+            </div>
+            <div data-role="footer" data-position="fixed" >
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="home.html" class="ui-btn ui-btn-icon-top ui-icon-home" data-transition="fade">Home</a></li>
+                        <li><a href="add_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-edit" data-transition="fade">New Entry</a></li>
+                        <li><a href="spendings.html" class="ui-btn ui-btn-icon-top ui-icon-cloud" data-transition="fade">All Entries</a></li>
+                        <li><a href="categories.html" class="ui-btn ui-btn-icon-top ui-icon-bars ui-btn-active" data-transition="fade">Accounts</a></li>
+                        <li><a href="summary.html" class="ui-btn ui-btn-icon-top ui-icon-bullets" data-transition="fade">Summary</a></li>
+                    </ul>
+		</div><!-- /navbar -->
+            </div><!-- /footer -->
+            <div data-role="panel" id="menu" data-position="left" data-display="overlay" >
+                <div class="ui-panel-inner">
+                    <ul class=" ui-nodisc-icon ui-listview">
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="home.html" class="ui-btn ui-btn-icon-right ui-icon-home ui-btn-active">Home</a>
+                        </li>
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="summary.html" class="ui-btn ui-btn-icon-right ui-icon-bullets">Summary</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <script>
+                function CategoryEntryCreated(bSaved, sMessage){
+                    if(bSaved){
+                        $("#error_add_category").html("CATEGORY CREATED.");
+                        $("input[name=category_name]",$("#add_category_form")).val("");
+                        setTimeout(function(){
+                            $("#error_add_category").html("&nbsp;");
+                        },2500);
+                    }else{
+                        $("#error_add_category").html(sMessage);
+                    }
+                }
+
+                $("#add_category_form").validate({
+                    messages: {
+                        category_name   : { required: "Please enter category"}
+                    },submitHandler: function(form){
+                        $("#error_add_category").html("CREATING CATEGORY ....");
+                        var data = {
+                            user_id     : oLoginObject.GetUserID(),
+                            session_id  : oLoginObject.GetSessionID,
+                            cat_type    : $("input[name=add_category_type]:checked",form).val(),
+                            category    : $("input[name=category_name]",form).val()
+                        };
+                        var url = oLoginObject.GetHostName() + oGetData.URLToCreateCategoryEntry();
+                        oGetData.CreateCategoryEntry(url,data, CategoryEntryCreated);
+                    }
+                });
+                
+                function LoadPage(){
+                    var bUserLoggedIn = oLoginObject.CheckUserLoggedIn();
+                    if(bUserLoggedIn !== true){
+                        $.mobile.changePage( "index.html", { transition: "fade"} );
+                        return;
+                    }
+
+                    var sUsername = oLoginObject.GetUsername();
+                    $("span[data-name=welcome_user]").html("WELCOME "+sUsername.toUpperCase());
+                }
+                function DeviceReady(){
+                    oLoginObject = $.LoginObject();
+                    oGetData = $.GetData();
+                }
+                app.initialize();
+            </script>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+    </body>
+</html>

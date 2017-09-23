@@ -1,0 +1,52 @@
+body{border-top: 1px solid #FFFFFF !important;}
+.ui-page{border-top: 1px solid #FFFFFF !important;}
+.ui-header{border-top: 1px solid #132226 !important;}
+.error{text-align: center; color: red; text-transform: uppercase;}
+.text-center{text-align: center !important;}
+.text-right{text-align: right !important;}
+.text-left{text-align: left !important;}
+.no-border{border: 0px solid black;}
+.border-left{border-left: 1px solid #ddd;}
+.border-right{border-right: 1px solid #ddd;}
+.border-top{border-top: 1px solid #ddd;}
+.border-bottom{border-bottom: 1px solid #ddd;}
+.border-top-bottom{border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;}
+.border-right-left{border-right: 1px solid #ddd; border-left: 1px solid #ddd;}
+.border-all{border: 1px solid #ddd;}
+.hide{display: none;}
+.capture_image{width: 100%; height: 50vh;}
+.margin-top-15{margin-top: 15px !important;}
+.welcome_user{display: block; text-align: center; font-size: small;}
+.left{float: left;}
+.right{float: right;}
+.app_title{font-size: 120% !important;}
+.text-red{color: red !important;}
+.text-green{color: green !important;}
+.month_container{width: 100%; text-align: center !important;}
+
+/* ADD 6(e) and 7(f) column grid */
+.ui-grid-e, .ui-grid-f { overflow: hidden; }
+
+/* grid e: 16/16/16/16/16/16 */
+.ui-grid-e .ui-block-a, .ui-grid-e .ui-block-b, .ui-grid-e .ui-block-c, .ui-grid-e .ui-block-d, .ui-grid-e .ui-block-e, .ui-grid-e .ui-block-f { width: 16.59166666666667%; }
+.ui-grid-e > :nth-child(n) { width: 16.66666666666667%; }
+.ui-grid-e .ui-block-a { clear: left; }
+
+/* grid f: 14/14/14/14/14 */
+.ui-grid-f .ui-block-a, .ui-grid-f .ui-block-b, .ui-grid-f .ui-block-c, .ui-grid-f .ui-block-d, .ui-grid-f .ui-block-e, .ui-grid-f .ui-block-f, .ui-grid-f .ui-block-g { width: 14.21071428571429%; }
+.ui-grid-f > :nth-child(n) { width: 14.28571428571429%; }
+.ui-grid-f .ui-block-a { clear: left; }
+
+/* ADD 6th (f) and 7th (g) blocks in grid */
+.ui-header .ui-navbar .ui-grid-e li.ui-block-f .ui-btn,
+.ui-footer .ui-navbar .ui-grid-e li.ui-block-f .ui-btn { margin-right: -3px; }/* NOT TESTED */
+
+.ui-header .ui-navbar .ui-grid-f li.ui-block-g .ui-btn,
+.ui-footer .ui-navbar .ui-grid-f li.ui-block-g .ui-btn { margin-right: -2px; }/* NOT TESTED */
+
+.ui-grid-e .ui-btn, .ui-grid-f .ui-btn { margin-right: 5px; margin-left: 5px; }
+
+.ui-block-f, .ui-block-g { margin: 0; padding: 0; border: 0; float: left; min-height: 1px; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; -ms-box-sizing: border-box; box-sizing: border-box; }
+
+.ui-header .ui-navbar .ui-grid-e li.ui-block-f .ui-btn-icon-right .ui-icon,
+.ui-footer .ui-navbar .ui-grid-f li.ui-block-g .ui-btn-icon-right .ui-icon { right: 8px; }

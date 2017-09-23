@@ -1,0 +1,241 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+        
+        <link rel="stylesheet" type="text/css" href="styles/jquery.mobile-1.4.5.min.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/custom.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/expense-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/jtsage-datebox.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/home.css" />
+        
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery.AjaxJSON.js"></script>
+        <script type="text/javascript" src="js/jquery.DatabaseObject.js"></script>
+        <script type="text/javascript" src="js/jquery.LoginObject.js"></script>
+        <script type="text/javascript" src="js/jquery.GetData.js"></script>
+        <script type="text/javascript" src="js/jquery.MainEvents.js"></script>
+        <script type="text/javascript" src="js/jtsage-datebox.min.js"></script>
+        
+        <title>TRANSACTION PAGE</title>
+    </head>
+    <body>
+        <div data-role="page" id="edit_transaction_page">
+            <style>
+                .ui-input-search:after{background-image: none !important;}
+                input{text-align: center !important;}
+                table thead th, table tbody td{border: 0px solid black !important;}
+                table tbody td .ui-btn{margin: 0px !important;}
+            </style>
+            <div data-role="header" data-position="static">
+                <h3 class="text-center">EDIT TRANSACTIONS</h3>
+                <a href="#menu" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-bars">Menu</a>
+                <a href="logout.html" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-power">Logout</a>
+                <span data-name="welcome_user" class="text-center welcome_user"></span>
+                <div data-role="navbar" style="border-top: 1px solid #132226;">
+                    <ul>
+                        <li><a href="add_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-plus ui-nodisc-icon">Add Transaction</a></li>
+                        <li><a href="edit_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-edit ui-nodisc-icon ui-btn-active">Edit Transaction</a></li>
+                    </ul>
+		</div><!-- /navbar -->
+            </div>
+            <div data-role="main" class="ui-content">
+                <h4 id="error_edit_transaction" class="error text-center">&nbsp;</h4>
+                <input type="date" data-role="datebox" class="text-center" name="select_date" required data-options='{"mode": "datebox", "useDialogForceFalse": true, "noAnimation": true, "overrideSetDateButtonLabel":"Select Date"}'/>
+                <div id="edit_transactions_container" class="hide">
+                    <h4 data-name="action_status_message" class="text-center error">&nbsp;</h4>
+                    <table data-role="table" data-mode="columntoggle:hide" class="ui-responsive ui-shadow table-stroke" data-column-btn-text="HIDE COLUMNS" id="date_wise_transactions" style="border: 1px solid black;">
+                        <thead>
+                            <tr>
+                                <th class="text-left">DESCRIPTION</th>
+                                <th class="text-right">AMOUNT</th>
+                                <th class="text-right">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+            </div>
+            <div data-role="footer" data-position="fixed" >
+		<div data-role="navbar">
+                    <ul>
+                        <li><a href="home.html" class="ui-btn ui-btn-icon-top ui-icon-home" data-transition="fade">Home</a></li>
+                        <li><a href="add_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-edit ui-btn-active" data-transition="fade">New Entry</a></li>
+                        <li><a href="spendings.html" class="ui-btn ui-btn-icon-top ui-icon-cloud" data-transition="fade">All Entries</a></li>
+                        <li><a href="categories.html" class="ui-btn ui-btn-icon-top ui-icon-bars" data-transition="fade">Accounts</a></li>
+                        <li><a href="summary.html" class="ui-btn ui-btn-icon-top ui-icon-bullets" data-transition="fade">Summary</a></li>
+                    </ul>
+		</div><!-- /navbar -->
+            </div><!-- /footer -->
+            <div data-role="panel" id="menu" data-position="left" data-display="overlay" >
+                <div class="ui-panel-inner">
+                    <ul class=" ui-nodisc-icon ui-listview">
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="home.html" class="ui-btn ui-btn-icon-right ui-icon-home ui-btn-active">Home</a>
+                        </li>
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="summary.html" class="ui-btn ui-btn-icon-right ui-icon-bullets">Summary</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <script>
+                $("input[name=select_date]",$("#edit_transaction_page")).bind('datebox', function (e, passed) { 
+                    if ( passed.method === 'set' ) {
+                        $(this).val(passed.value);
+                        LoadTransactionOnSelectedDate();
+                    }
+                });
+
+                var hovered = false;
+                $("#category_list").bind("mouseover",function() {
+                    hovered = true;
+                }).bind("mouseout",function() {
+                    hovered = false;
+                });
+                $("#category").keyup(function(){
+                    $(this).attr("data-selected_id","0");
+                });
+
+                $("#category").blur(function() {
+                    if(!hovered) {
+                        $("#category_list").children().addClass('ui-screen-hidden');
+                    }
+                    else {
+                        $("#category_list").bind("mouseup",function() {
+                            $("#category_list").children().addClass('ui-screen-hidden');
+                        });
+                    }
+                });
+                $(document).on("click", "li", function () {
+                    var text = $(this).text();
+                    $("#category").val(text);
+                    $("#category").attr("data-selected_id",$(this).attr("data-id"));
+                    $("#category_list").children().addClass('ui-screen-hidden');
+                });
+
+                function CategoriesNames(bLoaded, sMessage, aCategoriesNames){
+                    var html = "";
+                    if(bLoaded){
+                        $.each(aCategoriesNames,function(index,aCategoryInfo){
+                           html += "<li data-id='"+aCategoryInfo["CATEGORY_ID"]+"'>"+aCategoryInfo["CATEGORY_NAME"]+"</li>"; 
+                        });
+                        $("#category_list").html(html);
+                        $("#category_list").listview("refresh");
+                        $("#category_list").trigger("updatelayout");
+                    }else{
+                        $("#category_list").html(html);
+                        $("#category_list").listview("refresh");
+                        $("#category_list").children().addClass("ui-screen-hidden");
+                        $("#category_list").trigger("updatelayout");
+                        $("#category").attr("data-selected_id","0");
+                    }                
+                }
+
+                $("#category_list").on("filterablebeforefilter", function (e, data) {
+                    var $ul = $(this),
+                    $input = $(data.input),
+                    value = $input.val();
+                    $(this).attr("data-selected_id","0");
+                    var $ul = $("#category_list");
+                    if (value && value.length > 2) {
+                        $ul.html("<li><div class='ui-loader'><span class='ui-icon ui-icon-loading'></span></div></li>");
+                        $ul.listview("refresh");
+                        var url = oLoginObject.GetHostName() + oGetData.URLToGetCategoriesName();
+                        var data = {
+                            user_id     : oLoginObject.GetUserID(),
+                            session_id  : oLoginObject.GetSessionID(),
+                            search_val  : value,
+                            trans_type  : $("input[name=radio-choice-t-6]:checked").val()
+                        };
+                        oGetData.GetAllCategoriesName(url, data, CategoriesNames);
+                    }else{
+                        $("#category_list").html("");
+                        $("#category_list").listview("refresh");
+                        $("#category_list").children().addClass("ui-screen-hidden");
+                        $("#category_list").trigger("updatelayout");
+                        $("#category").attr("data-selected_id","0");
+                    }
+                });
+
+                $("input[name=radio-choice-t-6]").change(function(){
+                    $("#category_list").html("");
+                    $("#category_list").listview("refresh");
+                    $("#category_list").children().addClass("ui-screen-hidden");
+                    $("#category_list").trigger("updatelayout");
+                    $("#category").attr("data-selected_id","0").val("");
+                });
+                function TransactionsOnDateLoaded(bLoaded, sMessage, aTransactions){
+                    if(bLoaded){
+                        $("#error_edit_transaction").html("&nbsp;");
+                        $("#date_wise_transactions tbody tr").remove();
+                        $("div#edit_transactions_container").removeClass("hide");
+                        var trRows = "";
+                        $.each(aTransactions, function(index, aTransaction){
+                            trRows += "<tr>"+
+                                        "<td class='text-left'>"+aTransaction["TRANSACTION_FROM"]+" - "+aTransaction["TRANSACTION_TO"]+"<br/><small>"+aTransaction["TRANSACTION_DESCRIPTION"]+"</td>"+
+                                        "<td class='text-right'>"+aTransaction["TRANSACTION_AMOUNT"]+"</td>"+
+                                        "<td style='vertical-align: middle;'>"+
+                                            "<a href='edit_transaction.html?transaction_id="+aTransaction.TRANSACTION_ID+"' data-name='edit_order' class='ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-edit ui-btn-a ui-btn-icon-notext margin-4-0'>EDIT</a><br/>"+
+                                        "</td>"+
+                                      "</tr>";
+                        });
+                        $("#date_wise_transactions tbody").append(trRows);
+                    }else{
+                        $("#date_wise_transactions tbody tr").remove();
+                        $("div#edit_transactions_container").addClass("hide");
+                        $("#error_edit_transaction").html(sMessage);
+                    }
+                }
+                function LoadTransactionOnSelectedDate(){
+                    var data = {
+                        user_id     : oLoginObject.GetUserID(),
+                        session_id  : oLoginObject.GetSessionID(),
+                        dDate       : $("input[name=select_date]",$("#edit_transaction_page")).val()
+                    };
+                    var url = oLoginObject.GetHostName() + oGetData.URLToLoadTransactionOnDate();
+                    oGetData.LoadTransactionsOnDate(url, data, TransactionsOnDateLoaded);
+                }
+                function LoadPage(){
+                    var bUserLoggedIn = oLoginObject.CheckUserLoggedIn();
+                    if(bUserLoggedIn !== true){
+                        $.mobile.changePage( "index.html", { transition: "fade"} );
+                        return;
+                    }
+
+                    var sUsername = oLoginObject.GetUsername();
+                    $("span[data-name=welcome_user]").html("WELCOME "+sUsername.toUpperCase());
+                    
+                    var pageid = $.mobile.activePage.attr("id");
+                    var sSelectedDate = oLoginObject.GetSelectedDate();
+                    $("input[name=select_date]",$("#"+pageid)).val(sSelectedDate);
+                    $('input[name=select_date]',$("#"+pageid)).datebox();
+                    
+                    var from_page = localStorage.getItem("from_page");
+                    if(from_page !== undefined && from_page !== null && from_page === "edit_single_transaction_page"){
+                        var selected_date = localStorage.getItem("selected_date");
+                        if(selected_date !== undefined){
+                            $("input[name=select_date]",$("#"+pageid)).val(selected_date);
+                            $('input[name=select_date]',$("#"+pageid)).datebox();
+                        }
+                    }
+                    LoadTransactionOnSelectedDate();
+                    localStorage.removeItem("from_page");
+                    localStorage.removeItem("selected_date");
+                }
+                function DeviceReady(){
+                    oLoginObject = $.LoginObject();
+                    oGetData = $.GetData();
+                }
+                app.initialize();
+            </script>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+    </body>
+</html>

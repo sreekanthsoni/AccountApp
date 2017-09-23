@@ -1,0 +1,46 @@
+.responsive{
+    clear: both;
+}
+.responsive .ui-block-a, .responsive .ui-block-b{
+    width: 100%;
+    float: none;
+}
+.balance_span{
+    font-size: 50% !important;
+}
+.text-red{
+    color: red !important;
+}
+.text-green{
+    color: green !important;
+}
+
+@media all and (min-width: 42em) {
+    .responsive .ui-block-a, .responsive .ui-block-b {
+      float: left;
+      width: 49.95%;
+    }
+}
+@media all and (min-width: 55em) {
+    .responsive .ui-block-a{
+      width: 65%;
+    }
+    .responsive .ui-block-b{
+      width: 35%;
+    }
+}
+@media all and (min-width: 75em) {
+    .responsive .ui-block-a{
+      width: 75%;
+    }
+    .responsive .ui-block-b{
+      width: 25%;
+    }
+}
+
+.responsive .ui-block-date{
+    width: 14.285%;
+    float: left;
+}
+table tbody td{border: 1px solid #be9063 !important; text-align: center !important; padding-left: 4px !important; padding-right: 4px !important;}
+table thead th{border: 1px solid #be9063 !important; text-align: center !important; padding-left: 4px !important; padding-right: 4px !important;}        

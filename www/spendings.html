@@ -1,0 +1,219 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+        
+        <link rel="stylesheet" type="text/css" href="styles/jquery.mobile-1.4.5.min.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/custom.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/expense-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/jtsage-datebox.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/home.css" />
+        
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery.AjaxJSON.js"></script>
+        <script type="text/javascript" src="js/jquery.DatabaseObject.js"></script>
+        <script type="text/javascript" src="js/jquery.LoginObject.js"></script>
+        <script type="text/javascript" src="js/jquery.GetData.js"></script>
+        <script type="text/javascript" src="js/jquery.MainEvents.js"></script>
+        <script type="text/javascript" src="js/jtsage-datebox.min.js"></script>
+        
+        <title>ALL ENTRIES PAGE</title>
+    </head>
+    <body>
+        <div data-role="page" id="entries_page">
+            <div data-role="header" data-position="static">
+                <h3 class="text-center">ENTRIES</h3>
+                <a href="#menu" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-bars">Menu</a>
+                <a href="logout.html" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-power">Logout</a>
+                <span data-name="welcome_user" class="text-center welcome_user"></span>
+            </div>
+            <div data-role="main" class="ui-content">
+                <div class="month_container text-center">
+                    <a class="ui-btn ui-btn-corner-all ui-icon-arrow-l ui-btn-icon-left ui-btn-inline" data-name="prev_month" data-current_month="" data-current_year>P</a>
+                    <a class="ui-btn ui-btn-corner-all ui-btn-inline" href="javascript:void(0);" data-name="month">SEP 2017</a>
+                    <a class="ui-btn ui-btn-corner-all ui-icon-arrow-r ui-btn-icon-right ui-btn-inline" data-name="next_month" data-current_month="" data-current_year>N</a>
+                </div>
+                <h4 data-name='status_message' class='text-center text-red'>&nbsp;</h4>
+                <table data-role="table" data-mode="columntoggle:hide" class="ui-responsive ui-shadow table-stroke" width='100%' data-column-btn-text="HIDE COLUMNS" id="month_wise_transactions" style="border: 1px solid black;">
+                    <thead>
+                        <tr>
+                            <th class="text-left">DESCRIPTION</th>
+                            <th class="text-right">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+                <div data-name="detail_summary_container" style="min-height: 2vh;">&nbsp;</div>
+            </div>
+            <div data-role="footer" data-position="fixed" >
+                <div data-name="income_container" class="text-left" style="border-top: 2px dashed #132226; border-bottom: 1px solid #FFFFFF; margin: 0px 0px 2px 0px; color: #132226;">
+                    <span style="float: left;">BALANCE</span>
+                    <span style="float: right;" data-name="total_balance">0.00</span>
+                    <span style="clear: both;">&nbsp;</span>
+                </div>
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="home.html" class="ui-btn ui-btn-icon-top ui-icon-home" data-transition="fade">Home</a></li>
+                        <li><a href="add_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-edit" data-transition="fade">New Entry</a></li>
+                        <li><a href="spendings.html" class="ui-btn ui-btn-icon-top ui-icon-cloud ui-btn-active" data-transition="fade">All Entries</a></li>
+                        <li><a href="categories.html" class="ui-btn ui-btn-icon-top ui-icon-bars" data-transition="fade">Accounts</a></li>
+                        <li><a href="summary.html" class="ui-btn ui-btn-icon-top ui-icon-bullets" data-transition="fade">Summary</a></li>
+                    </ul>
+		</div><!-- /navbar -->
+            </div><!-- /footer -->
+            <div data-role="panel" id="menu" data-position="left" data-display="overlay" >
+                <div class="ui-panel-inner">
+                    <ul class=" ui-nodisc-icon ui-listview">
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="home.html" class="ui-btn ui-btn-icon-right ui-icon-home ui-btn-active">Home</a>
+                        </li>
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="summary.html" class="ui-btn ui-btn-icon-right ui-icon-bullets">Summary</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <script>
+                function TransactionsInMonthLoaded(bLoaded, sMessage, aTransactions){
+                    if(bLoaded){
+                        $("h4[data-name=status_message]").html("&nbsp;");
+                        $("#month_wise_transactions tbody tr").remove();
+                        $("div[data-name=summary_container]").html("");
+                        var trRows = "";
+                        var dBalance = 0.00;
+                        var dOpeningBalance = 0.00;
+                        var dClosingBalance = 0.00;
+                        $.each(aTransactions, function(index, aTransaction){
+                            dOpeningBalance = aTransaction["OPENING_BALANCE"];
+                            dClosingBalance = aTransaction["CLOSING_BALANCE"];
+                            var row_color = "text-red";
+                            if(aTransaction.TRANSACTION_TYPE === "INCOME"){
+                                row_color = "text-green";
+                                dBalance += parseFloat(aTransaction.TRANSACTION_AMOUNT);
+                            }else{
+                                dBalance -= parseFloat(aTransaction.TRANSACTION_AMOUNT);
+                            }
+                            if(index === 0){
+                                var opening_color = "text-red";
+                                if(dOpeningBalance >= 0.00){opening_color = "text-green";}
+                                trRows += "<tr>"+
+                                            "<td class='text-left "+opening_color+"'>OPENING BALANCE</td>"+
+                                            "<td class='text-right "+opening_color+"'>"+dOpeningBalance+"</td>"+
+                                          "</tr>";
+                            }
+                            trRows += "<tr>"+
+                                        "<td class='text-left "+row_color+"'>"+aTransaction.TRANSACTION_SHORT_DESCRIPTION+"</td>"+
+                                        "<td class='text-right "+row_color+"'>"+aTransaction.TRANSACTION_AMOUNT+"</td>"+
+                                      "</tr>";
+                        });
+                        $("span[data-name=total_balance]").html(dClosingBalance);
+                        $("#month_wise_transactions tbody").append(trRows);
+                    }else{
+                        $("h4[data-name=status_message]").html(sMessage);
+                        $("#month_wise_transactions tbody tr").remove();
+                        $("span[data-name=total_balance]").html("0.00");
+                    }
+                }
+
+                function LoadTransactionsInMonth(){
+                    var data = {
+                        user_id     : oLoginObject.GetUserID(),
+                        session_id  : oLoginObject.GetSessionID(),
+                        month_no    : $("a[data-name=prev_month]").attr("data-current_month"),
+                        year_val    : $("a[data-name=prev_month]").attr("data-current_year")
+                    };
+                    var url = oLoginObject.GetHostName() + oGetData.URLToGetAllTransactionsInMonth();
+                    oGetData.GetAllTransactionsInMonth(url, data, TransactionsInMonthLoaded);
+                }
+
+                function MonthInfoLoaded(bLoaded, sMessage, aMonthInfo){
+                    if(bLoaded){
+                        $("h4[data-name=status_message]").html("&nbsp;");
+                        var sMonthName = (aMonthInfo["MONTH"]).toUpperCase();
+                        var iMonthValue = aMonthInfo["MONTH_VALUE"];
+                        var iYearValue = aMonthInfo["YEAR_VALUE"];
+                        $("a[data-name=month]").html(sMonthName + " - " + iYearValue);
+                        $("a[data-name=prev_month]").attr("data-current_month",iMonthValue).attr("data-current_year",iYearValue);
+                        $("a[data-name=next_month]").attr("data-current_month",iMonthValue).attr("data-current_year",iYearValue);
+                        LoadTransactionsInMonth();
+                    }else{
+                        $("h4[data-name=status_message]").html(sMessage);
+                    }
+                }
+
+                $("a[data-name=prev_month]").click(function(){
+                    if($(this).is(":disabled")){return false;}
+                    var data = {
+                        user_id     : oLoginObject.GetUserID(),
+                        session_id  : oLoginObject.GetSessionID(),
+                        month_no    : $(this).attr("data-current_month"),
+                        year_val    : $(this).attr("data-current_year")
+                    };
+                    var url = oLoginObject.GetHostName() + oGetData.URLToPrevMonthWithInfo();
+                    oGetData.LoadPrevMonthWithInfo(url, data, MonthInfoLoaded);
+                });
+
+                $("a[data-name=next_month]").click(function(){
+                    if($(this).is(":disabled")){return false;}
+                    var data = {
+                        user_id     : oLoginObject.GetUserID(),
+                        session_id  : oLoginObject.GetSessionID(),
+                        month_no    : $(this).attr("data-current_month"),
+                        year_val    : $(this).attr("data-current_year")
+                    };
+                    var url = oLoginObject.GetHostName() + oGetData.URLToNextMonthWithInfo();
+                    oGetData.LoadNextMonthWithInfo(url, data, MonthInfoLoaded);
+                });
+
+                function MonthLoaded(bLoaded, sMessage, aMonthInfo){
+                    if(bLoaded){
+                        $("h4[data-name=status_message]").html("&nbsp;");
+                        var sMonthName = (aMonthInfo["MONTH"]).toUpperCase();
+                        var iMonthValue = aMonthInfo["MONTH_VALUE"];
+                        var iYearValue = aMonthInfo["YEAR_VALUE"];
+                        $("a[data-name=month]").html(sMonthName + " - " + iYearValue);
+                        $("a[data-name=prev_month]").attr("data-current_month",iMonthValue).attr("data-current_year",iYearValue);
+                        $("a[data-name=next_month]").attr("data-current_month",iMonthValue).attr("data-current_year",iYearValue);
+                        LoadTransactionsInMonth();
+                    }else{
+                        $("h4[data-name=status_message]").html(sMessage);
+                    }
+                }
+
+                function LoadMonth(){
+                    var data = {
+                        user_id     : oLoginObject.GetUserID(),
+                        session_id  : oLoginObject.GetSessionID(),
+                        dDate       : oLoginObject.GetSelectedDate()
+
+                    };
+                    var url = oLoginObject.GetHostName()+oGetData.URLToLoadMonthInfo();
+                    oGetData.LoadMonthInformation(url, data, MonthLoaded);
+                }
+                function LoadPage(){
+                    var bUserLoggedIn = oLoginObject.CheckUserLoggedIn();
+                    if(bUserLoggedIn !== true){
+                        $.mobile.changePage( "index.html", { transition: "fade"} );
+                        return;
+                    }
+
+                    var sUsername = oLoginObject.GetUsername();
+                    $("span[data-name=welcome_user]").html("WELCOME "+sUsername.toUpperCase());
+                    LoadMonth();
+                }
+                function DeviceReady(){
+                    oLoginObject = $.LoginObject();
+                    oGetData = $.GetData();
+                }
+                app.initialize();
+            </script>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+    </body>
+</html>

@@ -1,0 +1,229 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+        
+        <link rel="stylesheet" type="text/css" href="styles/jquery.mobile-1.4.5.min.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/custom.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/expense-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/jtsage-datebox.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/home.css" />
+        
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery.AjaxJSON.js"></script>
+        <script type="text/javascript" src="js/jquery.DatabaseObject.js"></script>
+        <script type="text/javascript" src="js/jquery.LoginObject.js"></script>
+        <script type="text/javascript" src="js/jquery.GetData.js"></script>
+        <script type="text/javascript" src="js/jquery.MainEvents.js"></script>
+        <script type="text/javascript" src="js/jtsage-datebox.min.js"></script>
+        
+        <title>TRANSACTION PAGE</title>
+    </head>
+    <body>
+        <div data-role="page" id="add_transaction_page">
+            <style>
+                .ui-input-search:after{background-image: none !important;}
+                input{text-align: center !important;}
+            </style>
+            <div data-role="header" data-position="static" >
+                <h3 class="text-center">ADD TRANSACTIONS</h3>
+                <a href="#menu" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-bars">Menu</a>
+                <a href="logout.html" class="ui-btn ui-btn-corner-all ui-nodisc-icon  ui-btn-icon-notext ui-icon-power">Logout</a>
+                <span data-name="welcome_user" class="text-center welcome_user"></span>
+                <div data-role="navbar" style="border-top: 1px solid #132226;">
+                    <ul>
+                        <li><a href="add_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-plus ui-nodisc-icon ui-btn-active">Add Transaction</a></li>
+                        <li><a href="edit_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-edit ui-nodisc-icon">Edit Transaction</a></li>
+                    </ul>
+		</div><!-- /navbar -->
+            </div>
+            <div data-role="main" class="ui-content">
+                <form name="add_transaction_form" id="add_transaction_form" method="post" onsubmit="return false;">
+                    <h4 id="error_transaction" class="error text-center">&nbsp;</h4>
+                    <fieldset data-role="controlgroup"  data-type="horizontal" class="text-center">
+                        <input type="radio" name="radio-choice-t-6" id="radio-choice-t-6a" value="income">
+                        <label for="radio-choice-t-6a">INCOME</label>
+                        <input type="radio" name="radio-choice-t-6" id="radio-choice-t-6b" value="expense" checked="checked">
+                        <label for="radio-choice-t-6b">EXPENSE</label>
+                    </fieldset>
+                    <h3 class="text-left">Transaction Details</h3>
+                    <input type="date" data-role="datebox" class="text-center" name="select_date" required data-options='{"mode": "datebox", "useDialogForceFalse": true, "noAnimation": true, "overrideSetDateButtonLabel":"Select Date"}'/>
+                    <input type="number" step="0.01" name="amount" id="amount" placeholder="AMOUNT" required class="text-center"/>
+                    <div class="ui-filterable">
+                        <input type="text" name="category" id="category" data-type="search" placeholder="NAME" required class="text-center" data-selected_id=""/>
+                    </div>
+                    <ul data-role="listview" data-filter="true" data-inset="true" data-input="#category" id="category_list"></ul>
+                    <input type="text" name="notes" id="notes" placeholder="NOTES" class="text-center"/>
+                    <div class="ui-field-contain">
+                        <button type="submit" data-inline="true" class="ui-btn ui-btn-corner-all " data-name="add_transaction" name="add_transaction_btn">ADD TRANSACTION</button>
+                    </div>
+                </form>
+            </div>
+            <div data-role="footer" data-position="fixed" >
+		<div data-role="navbar">
+                    <ul>
+                        <li><a href="home.html" class="ui-btn ui-btn-icon-top ui-icon-home" data-transition="fade">Home</a></li>
+                        <li><a href="add_transactions.html" class="ui-btn ui-btn-icon-top ui-icon-edit ui-btn-active" data-transition="fade">New Entry</a></li>
+                        <li><a href="spendings.html" class="ui-btn ui-btn-icon-top ui-icon-cloud" data-transition="fade">All Entries</a></li>
+                        <li><a href="categories.html" class="ui-btn ui-btn-icon-top ui-icon-bars" data-transition="fade">Accounts</a></li>
+                        <li><a href="summary.html" class="ui-btn ui-btn-icon-top ui-icon-bullets" data-transition="fade">Summary</a></li>
+                    </ul>
+		</div><!-- /navbar -->
+            </div><!-- /footer -->
+            <div data-role="panel" id="menu" data-position="left" data-display="overlay" >
+                <div class="ui-panel-inner">
+                    <ul class=" ui-nodisc-icon ui-listview">
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="home.html" class="ui-btn ui-btn-icon-right ui-icon-home ui-btn-active">Home</a>
+                        </li>
+                        <li data-icon="home" class="ui-first-child">
+                            <a href="summary.html" class="ui-btn ui-btn-icon-right ui-icon-bullets">Summary</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <script>
+                function TransactionEntrySaved(bSaved, sMessage){
+                    if(bSaved){
+                        $("#error_transaction").html("TRANSACTION SAVED ....");
+                        $("input[name=amount]",$("#add_transaction_form")).val("").focus();
+                        $("input[name=category]",$("#add_transaction_form")).val("");
+                        $("input[name=notes]",$("#add_transaction_form")).val("");
+                        setTimeout(function(){
+                            $("#error_transaction").html("&nbsp;");
+                        },2000);
+                    }else{
+                        $("#error_transaction").html(sMessage);
+                    }
+                }
+                $("#add_transaction_form").validate({
+                    messages: {
+                        select_date : { required: "Select valid date"},
+                        amount      : { required: "Should be a valid amount"},
+                        category    : { required: "Please enter category"}
+                    },submitHandler: function(form){
+                        $("#error_transaction").html("SAVING TRANSACTION ....");
+                        var data = {
+                            user_id     : oLoginObject.GetUserID(),
+                            session_id  : oLoginObject.GetSessionID,
+                            trans_type  : $("input[name=radio-choice-t-6]:checked",form).val(),
+                            sel_date    : $("input[name=select_date]",form).val(),
+                            amount      : $("input[name=amount]",form).val(),
+                            category    : $("input[name=category]",form).val(),
+                            category_id : $("input[name=category]",form).attr("data-selected_id"),
+                            notes       : $("input[name=notes]",form).val()
+                        };
+                        var url = oLoginObject.GetHostName() + oGetData.URLToSaveTransactionEntry();
+                        oGetData.SaveTransactionEntry(url,data, TransactionEntrySaved);
+                    }
+                });
+
+                
+                var hovered = false;
+                $("#category_list").bind("mouseover",function() {
+                    hovered = true;
+                }).bind("mouseout",function() {
+                    hovered = false;
+                });
+                $("#category").keyup(function(){
+                    $(this).attr("data-selected_id","0");
+                });
+
+                $("#category").blur(function() {
+                    if(!hovered) {
+                        $("#category_list").children().addClass('ui-screen-hidden');
+                    }
+                    else {
+                        $("#category_list").bind("mouseup",function() {
+                            $("#category_list").children().addClass('ui-screen-hidden');
+                        });
+                    }
+                });
+                $(document).on("click", "li", function () {
+                    var text = $(this).text();
+                    $("#category").val(text);
+                    $("#category").attr("data-selected_id",$(this).attr("data-id"));
+                    $("#category_list").children().addClass('ui-screen-hidden');
+                });
+
+                function CategoriesNames(bLoaded, sMessage, aCategoriesNames){
+                    var html = "";
+                    if(bLoaded){
+                        $.each(aCategoriesNames,function(index,aCategoryInfo){
+                           html += "<li data-id='"+aCategoryInfo["CATEGORY_ID"]+"'>"+aCategoryInfo["CATEGORY_NAME"]+"</li>"; 
+                        });
+                        $("#category_list").html(html);
+                        $("#category_list").listview("refresh");
+                        $("#category_list").trigger("updatelayout");
+                    }else{
+                        $("#category_list").html(html);
+                        $("#category_list").listview("refresh");
+                        $("#category_list").children().addClass("ui-screen-hidden");
+                        $("#category_list").trigger("updatelayout");
+                        $("#category").attr("data-selected_id","0");
+                    }                
+                }
+
+                $("#category_list").on("filterablebeforefilter", function (e, data) {
+                    var $ul = $(this),
+                    $input = $(data.input),
+                    value = $input.val();
+                    $(this).attr("data-selected_id","0");
+                    var $ul = $("#category_list");
+                    if (value && value.length > 2) {
+                        $ul.html("<li><div class='ui-loader'><span class='ui-icon ui-icon-loading'></span></div></li>");
+                        $ul.listview("refresh");
+                        var url = oLoginObject.GetHostName() + oGetData.URLToGetCategoriesName();
+                        var data = {
+                            user_id     : oLoginObject.GetUserID(),
+                            session_id  : oLoginObject.GetSessionID(),
+                            search_val  : value,
+                            trans_type  : $("input[name=radio-choice-t-6]:checked").val()
+                        };
+                        oGetData.GetAllCategoriesName(url, data, CategoriesNames);
+                    }else{
+                        $("#category_list").html("");
+                        $("#category_list").listview("refresh");
+                        $("#category_list").children().addClass("ui-screen-hidden");
+                        $("#category_list").trigger("updatelayout");
+                        $("#category").attr("data-selected_id","0");
+                    }
+                });
+
+                $("input[name=radio-choice-t-6]").change(function(){
+                    $("#category_list").html("");
+                    $("#category_list").listview("refresh");
+                    $("#category_list").children().addClass("ui-screen-hidden");
+                    $("#category_list").trigger("updatelayout");
+                    $("#category").attr("data-selected_id","0").val("");
+                });
+                function LoadPage(){
+                    var bUserLoggedIn = oLoginObject.CheckUserLoggedIn();
+                    if(bUserLoggedIn !== true){
+                        $.mobile.changePage( "index.html", { transition: "fade"} );
+                        return;
+                    }
+
+                    var sUsername = oLoginObject.GetUsername();
+                    $("span[data-name=welcome_user]").html("WELCOME "+sUsername.toUpperCase());
+                    
+                    var pageid = $.mobile.activePage.attr("id");
+                    var sSelectedDate = oLoginObject.GetSelectedDate();
+                    $("input[name=select_date]",$("#"+pageid)).val(sSelectedDate);
+                    $('input[name=select_date]',$("#"+pageid)).datebox();
+                }
+                function DeviceReady(){
+                    oLoginObject = $.LoginObject();
+                    oGetData = $.GetData();
+                }
+                app.initialize();
+            </script>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+    </body>
+</html>

@@ -1,0 +1,170 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+        
+        <link rel="stylesheet" type="text/css" href="styles/jquery.mobile-1.4.5.min.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/custom.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/expense-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/jtsage-datebox.min.css" />
+        <link rel="stylesheet" type="text/css" href="styles/home.css" />
+        
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery.AjaxJSON.js"></script>
+        <script type="text/javascript" src="js/jquery.DatabaseObject.js"></script>
+        <script type="text/javascript" src="js/jquery.LoginObject.js"></script>
+        <script type="text/javascript" src="js/jquery.GetData.js"></script>
+        <script type="text/javascript" src="js/jquery.MainEvents.js"></script>
+        <script type="text/javascript" src="js/jtsage-datebox.min.js"></script>
+
+        <title>EDIT CATEGORY PAGE</title>
+    </head>
+    <body>
+        <div data-role="page" id="edit_category_page">
+            <style>
+            .ui-input-search:after{background-image: none !important;}
+            </style>
+            <div data-role="header" data-position="static">
+                <h3 class="text-center"><u>CATEGORY ENTRY</u></h3>
+                <a data-name="back" data-rel="back" class="ui-btn ui-btn-corner-all ui-nodisc-icon ui-btn-b ui-btn-icon-notext ui-icon-back ui-btn-left">BACK</a>
+                <a href="logout.html" class="ui-btn ui-btn-corner-all ui-nodisc-icon ui-btn-b ui-btn-icon-notext ui-icon-power ui-btn-right">Logout</a>
+                <span data-name="welcome_user" class="text-center welcome_user"></span>
+            </div>
+            <div data-role="main" class="ui-content">
+                <form name="edit_category_form" id="edit_category_form" method="post" onsubmit="return false;">
+                    <h4 id="error_edit_category" class="error text-center">&nbsp;</h4>
+                    <input type="hidden" name="category_id" id="category_id" value=""/>
+                    <fieldset data-role="controlgroup"  data-type="horizontal" class="text-center">
+                        <input type="radio" name="radio-choice-t-6" id="income" value="income" data-name="INCOME">
+                        <label for="income">INCOME</label>
+                        <input type="radio" name="radio-choice-t-6" id="expense" value="expense" data-name="EXPENSE" checked="checked">
+                        <label for="expense">EXPENSE</label>
+                    </fieldset>
+                    <h3 class="text-left">Category Details</h3>
+                    <input type="text" name="category_name" id="category_name" placeholder="CATEGORY" required class="text-center"/>
+                    <div class="ui-field-contain">
+                        <button type="submit" data-inline="true" class="ui-btn ui-btn-corner-all ui-btn-b" data-name="save_n_authorize" name="save_n_authorize_payment">UPDATE</button>
+                        <button type="button" data-inline="true" class="ui-btn ui-btn-corner-all ui-btn-b" data-name="delete_category" name="delete_category">DELETE</button>
+                    </div>
+                </form>
+            </div>
+            <script>
+                $("a[data-name=back]").click(function(){
+                    return true;
+                });
+                
+                function getUrlParameter(sParam) {
+                    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                        sURLVariables = sPageURL.split('&'),
+                        sParameterName,
+                        i;
+
+                    for (i = 0; i < sURLVariables.length; i++) {
+                        sParameterName = sURLVariables[i].split('=');
+
+                        if (sParameterName[0] === sParam) {
+                            return sParameterName[1] === undefined ? true : sParameterName[1];
+                        }
+                    }
+                };
+                
+                function CategoryDeleted(bDeleted, sMessage){
+                    if(bDeleted){
+                        $("#error_edit_category").html("&nbsp;");
+                        $("a[data-name=back]").trigger("click");
+                    }else{
+                        $("#error_edit_category").html(sMessage);
+                    }
+                }
+                $("button[data-name=delete_category]").on("click",function(){
+                    var pageid = $.mobile.activePage.attr("id");
+                    if(!confirm("YOU ARE ABOUT TO DELETE THE CATEGORY. ARE YOU SURE?")){
+                        return false;
+                    }
+                    $("#error_edit_category").html("DELETING THE CATEGORY .... ");
+                    var sUrl = oLoginObject.GetHostName() + oGetData.URLToDeleteCategoryEntry();
+                    var data = {
+                        user_id     : oLoginObject.GetUserID(),
+                        session_id  : oLoginObject.GetSessionID(),
+                        category_id : $("input[name=category_id]",$("#"+pageid)).val()
+                    };
+                    oGetData.DeleteCategoryEntry(sUrl,data, CategoryDeleted);
+                });
+                
+                function CategoryEntryUpdated(bSaved, sMessage){
+                    if(bSaved){
+                        $("#error_edit_category").html("&nbsp;");
+                        $("a[data-name=back]").trigger("click");
+                    }else{
+                        $("#error_edit_category").html(sMessage);
+                    }
+                }
+
+                $("#edit_category_form").validate({
+                    messages: {
+                        category_name   : { required: "Please enter category"}
+                    },submitHandler: function(form){
+                        $("#error_edit_category").html("UPDATE CATEGORY ....");
+                        var data = {
+                            user_id     : oLoginObject.GetUserID(),
+                            session_id  : oLoginObject.GetSessionID,
+                            category_id : $("input[name=category_id]",form).val(),
+                            cat_type    : $("input[name=radio-choice-t-6]:checked",form).val(),
+                            category    : $("input[name=category_name]",form).val()
+                        };
+                        var url = oLoginObject.GetHostName() + oGetData.URLToUpdateCategoryEntry();
+                        oGetData.UpdateCategoryEntry(url,data, CategoryEntryUpdated);
+                    }
+                });
+
+                function CategoryInformationLoaded(bLoaded, sMessage, aCategoryInformation){
+                    if(bLoaded){
+                        $("h4[data-name=error_edit_category]").html("&nbsp;");
+                        var pageid = $.mobile.activePage.attr("id");
+                        $("input[name=category_id]",$("#"+pageid)).val(aCategoryInformation.CATEGORY_ID);
+                        $("input[name=radio-choice-t-6][data-name="+aCategoryInformation.CATEGORY_INCOME_EXPENSE+"]",$("#"+pageid)).attr("checked", "checked");
+                        $("input[name=radio-choice-t-6]",$("#"+pageid)).checkboxradio("refresh");
+                        $("input[name=radio-choice-t-6]",$("#"+pageid)).val(),
+                        $("input[name=category_name]",$("#"+pageid)).val(aCategoryInformation.CATEGORY_NAME);
+                        localStorage.setItem("from_page","edit_category_page");
+                    }else{
+                        $("h4[data-name=error_edit_category]").html(sMessage);
+                    }
+                }
+
+                function LoadPage(){
+                    var bUserLoggedIn = oLoginObject.CheckUserLoggedIn();
+                    if(bUserLoggedIn !== true){
+                        $.mobile.changePage( "index.html", { transition: "fade"} );
+                        return;
+                    }
+
+                    var sUsername = oLoginObject.GetUsername();
+                    $("span[data-name=welcome_user]").html("WELCOME "+sUsername.toUpperCase());
+                    var iCategoryID = getUrlParameter("category_id");
+                    if(iCategoryID !== ""){
+                        var data = {
+                            user_id     : oLoginObject.GetUserID(),
+                            session_id  : oLoginObject.GetSessionID(),
+                            category_id : iCategoryID
+                        };
+                        $("h4[data-name=error_edit_category]").html("LOADING CATEGORY INFORMATION.... ");
+                        var sURL = oLoginObject.GetHostName() + oGetData.URLToLoadCategoryInformation();
+                        oGetData.LoadCategoryInformation(sURL, data, CategoryInformationLoaded);
+                    }
+                }
+                function DeviceReady(){
+                    oLoginObject = $.LoginObject();
+                    oGetData = $.GetData();
+                }
+                app.initialize();
+            </script>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+    </body>
+</html>
