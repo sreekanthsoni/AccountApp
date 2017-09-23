@@ -67,5 +67,6 @@
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
+    <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
     <plugin name="cordova-plugin-statusbar" spec="https://github.com/apache/cordova-plugin-statusbar.git" />
 </widget>
